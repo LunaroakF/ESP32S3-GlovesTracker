@@ -1,12 +1,14 @@
 #include <SoftwareSerial.h>
 
 #include "defines.h"
+#include "input.h"
+#include "Encoder/Alpha.h"
+
+GloversInput gloversInput;
+AlphaEncoder alphaEncoder; //实例化编码器对象
 
 void setup() {
   Serial.begin(115200); //初始波特率115200
-  pinMode(Bit_SA, OUTPUT);
-  pinMode(Bit_SB, OUTPUT);
-  pinMode(Bit_SC, OUTPUT);
 }
 
 void output(char* data){
@@ -15,8 +17,16 @@ void output(char* data){
 }
 
 void loop() {
-  int adcValue = analogRead(A0)-11;
-  
-  Serial.println("A"+ String(adcValue) +"B0C0D0E0F1023G1023P0HJN");
-  delay(4);
+  int* fingerPoition = gloversInput.getFingerPosition(false,false);
+  // Serial.println(
+  //   "A"+ String(fingerPoition[0]) +
+  //   "B"+ String(fingerPoition[1]) +
+  //   "C"+ String(fingerPoition[2]) +
+  //   "D"+ String(fingerPoition[3]) +
+  //   "E"+ String(fingerPoition[4]) +
+  //   "F"+ANALOG_MAX+
+  //   "G"+ANALOG_MAX+
+  //   "P0HJN");
+  Serial.println(alphaEncoder.encode(fingerPoition, 0, 0, false, false, false, false, false, false, false, false));
+  delay(50);
 }

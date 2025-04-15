@@ -1,27 +1,21 @@
-#include <SoftwareSerial.h>
+#include "input.h"
 
-#include "defines.h"
+int* GloversInput::getFingerPosition(bool reset, bool recalCulate){
+  static int fingerPosition[5] = {0, 0, 0, 0, 0};
 
-struct fingerData
-{
-  int Thumb = 0;
-  int Index = 0;
-  int Middle = 0;
-  int Ring = 0;
-  int Pinky = 0; 
-};
-
-fingerData maxFingers = {0, 0, 0, 0, 0};
-fingerData minFingers = {ANALOG_MAX, ANALOG_MAX, ANALOG_MAX, ANALOG_MAX, ANALOG_MAX};
-
-
-int* getFingerPosition(bool reset, bool recalulate){
-  
+  int ADC_Value = analogRead(PIN_ADC);
+  for (size_t i = 0; i < 5; i++)
+  {
+    setChannel(i);
+    delayMicroseconds(10);
+    ADC_Value = analogRead(PIN_ADC) - PHASE;
+    fingerPosition[i] = ADC_Value < 0 ? 0 : ADC_Value;
+  }
+  return &fingerPosition[0];
 }
 
-void setChannel(int channel) {
-  digitalWrite(Bit_SA, bitRead(channel, 0));
-  digitalWrite(Bit_SB, bitRead(channel, 1));
-  digitalWrite(Bit_SC, bitRead(channel, 2));
-  delay(1);
+void GloversInput::setChannel(int channel) {
+  digitalWrite(BIT_SA, bitRead(channel, 0));
+  digitalWrite(BIT_SB, bitRead(channel, 1));
+  digitalWrite(BIT_SC, bitRead(channel, 2));
 }
