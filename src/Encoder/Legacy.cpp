@@ -1,7 +1,7 @@
 #include "Legacy.h"
 
 //legacy LucidGloves传统编码 已弃用
-char* encode(int* flexion, int joyX, int joyY, bool joyClick, bool triggerButton, bool aButton, bool bButton, bool grab, bool pinch, bool calib, bool menu){
+char* LegacyEncoder::encode(int* flexion, int joyX, int joyY, bool joyClick, bool triggerButton, bool aButton, bool bButton, bool grab, bool pinch, bool calib, bool menu){
     static char stringToEncode[75];
     
     sprintf(stringToEncode, "%d&%d&%d&%d&%d&%d&%d&%d&%d&%d&%d&%d&%d\n", 
@@ -12,7 +12,7 @@ char* encode(int* flexion, int joyX, int joyY, bool joyClick, bool triggerButton
     return stringToEncode;
   }
   
-  void decodeData(char* stringToDecode, int* hapticLimits){
+  void LegacyEncoder::decodeData(char* stringToDecode, int* hapticLimits){
       byte index = 0;
       char* ptr = strtok(stringToDecode, "&");  //分隔符
       while(ptr != NULL)
