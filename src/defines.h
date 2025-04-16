@@ -1,4 +1,5 @@
-// ADC口串联的电阻大小，传入3.3V要保证传入ADC分压在1V以内，||仅标记无引用||
+// ADC口串联的电阻大小，对于ESP8266电位器链接3.3V要保证传入ADC分压在1V以内
+// ||仅标记无引用||
 #define OHM 23.5
 
 // 是否禁用大拇指
@@ -6,12 +7,17 @@
 
 // 主线程延迟时间
 #define MAINTHREAD_DELAY 4  // ms
+#define CALIBRATION_LOOPS \
+	-1  // How many loops should be calibrated. Set to -1 to always be calibrated.
+#define ALWAYS_CALIBRATING CALIBRATION_LOOPS == -1
 
 // ADC相位偏移量
 #define PHASE 0
 
 // 开发板定义
 #define BOARD ESP8266
+#define SERIAL_BAUD_RATE 115200  // 串口波特率
+#define COMMUNICATION COMM_SERIAL  // 通信方式 COMM_SERIAL | COMM_WIFISERIAL
 
 // 编码方式 ENCODING_ALPHA | ENCODING_LEGACY(已弃用)
 #define ENCODING ENCODING_ALPHA
