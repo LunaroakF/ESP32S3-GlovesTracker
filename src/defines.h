@@ -2,17 +2,17 @@
 // ||仅标记无引用||
 #define OHM 23.5
 
-// 是否禁用大拇指
-#define NO_THUMB false
+#define NO_THUMB false // 是否禁用大拇指追踪
+#define FLIP_POTS false  // 是否反转电位器
 
-// 主线程延迟时间
-#define MAINTHREAD_DELAY 4  // ms
+#define MAINTHREAD_DELAY 4  // 主线程延迟时间ms
+#define MULTIPLEXER_DELAY 10 // 复用器稳定时间us
+
 #define CALIBRATION_LOOPS \
-	-1  // How many loops should be calibrated. Set to -1 to always be calibrated.
+	-1  // -1表示不进行校准，0表示只进行一次校准，正数表示进行多次校准
 #define ALWAYS_CALIBRATING CALIBRATION_LOOPS == -1
 
-// ADC相位偏移量
-#define PHASE 0
+#define PHASE 0 // ADC相位偏移量
 
 // 开发板定义
 #define BOARD ESP8266
@@ -22,10 +22,10 @@
 // 编码方式 ENCODING_ALPHA | ENCODING_LEGACY(已弃用)
 #define ENCODING ENCODING_ALPHA
 
-// 是否启用中值滤波
+// 中值滤波
 #define ENABLE_MEDIAN_FILTER true
 #ifdef ENABLE_MEDIAN_FILTER
-#define MEDIAN_SAMPLES 50  // 中值滤波采样次数
+#define MEDIAN_SAMPLES 20  // 中值滤波采样次数
 #endif
 
 // 是否对模拟输入值限幅

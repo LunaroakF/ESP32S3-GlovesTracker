@@ -17,7 +17,7 @@ int* GloversInput::getFingerPosition(bool calibrating, bool reset) {
 	int ADC_Value = analogRead(PIN_ADC);
 	for (size_t i = 0; i < 5; i++) {
 		setChannel(i);
-		delayMicroseconds(10);
+		delayMicroseconds(MULTIPLEXER_DELAY);  // 等待模拟输入稳定
 		ADC_Value = analogRead(PIN_ADC) - PHASE;
 		rawFingers[i] = ADC_Value < 0 ? 0 : ADC_Value;
 	}
