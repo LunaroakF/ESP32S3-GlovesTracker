@@ -1,6 +1,8 @@
 #include <SoftwareSerial.h>
 
+#include "Communication/NetworkManager.h"
 #include "defines.h"
+#include "gesture.h"
 #include "input.h"
 
 #if COMMUNICATION == COMM_SERIAL
@@ -16,16 +18,27 @@ AlphaEncoder Encoder;  // 实例化编码器对象
 #include "Encoder/Legacy.h"
 LegacyEncoder Encoder;  // 实例化编码器对象
 #endif
-GloversInput gloversInput;
 
+GloversInput gloversInput;
+NetworkManager network;
 ICommunication* comm;
 int loops = 0;
 
 void setup() {
+	network.configure(
+		"fox",
+		"19645277",
+		"OpenVRGloves TrackerBT"
+	);  // 配置WiFi信息和设备名称
+
+	Serial.println("[" + network.getSSID() + "] Connecting...");
+	network.begin();  // 初始化网络连接
+
+	pinMode(LED_BUILTIN, OUTPUT);
 #if COMMUNICATION == COMM_SERIAL
 	comm = new SerialCommunication();
-#elif COMMUNICATION == COMM_BTSERIAL
-	comm = new Communication();
+#elif COMMUNICATION == COMM_WIFISERIAL
+	comm = new WifiCommunication();
 #endif
 	comm->start();
 	Serial.begin(115200);  // 初始波特率115200
@@ -70,6 +83,7 @@ void loop() {
 		bool pinchButton = pinchGesture(fingerPos);
 #else
 		bool pinchButton = false;
+
 #endif
 
 		bool menuButton = false;
@@ -90,7 +104,6 @@ void loop() {
 			calibButton,
 			menuButton
 		));
-
 		delay(MAINTHREAD_DELAY);
 	}
 }

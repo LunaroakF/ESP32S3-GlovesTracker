@@ -1,7 +1,5 @@
 #include "SerialCommunication.h"
 
-bool m_isOpen;
-
 bool SerialCommunication::isOpen() { return m_isOpen; }
 
 void SerialCommunication::start() {
