@@ -4,6 +4,7 @@
 #include "defines.h"
 #include "gesture.h"
 #include "input.h"
+#include "networkconfig.h"
 
 // #if COMMUNICATION == COMM_SERIAL
 // #include "Communication/SerialCommunication.h"
@@ -19,43 +20,94 @@ AlphaEncoder Encoder;  // 实例化编码器对象
 LegacyEncoder Encoder;  // 实例化编码器对象
 #endif
 
+void WiFiConnect(char *ssid, char *password);
+void handleSerialCommand(String cmd);
+void CheckSerialCommand();
+
 GloversInput gloversInput;
 NetworkManager network;
 ICommunication* comm;
+NetWorkConfig netWorkConfig;
 int loops = 0;
 String serialCommand = "";
 
-void handleSerialCommand(String cmd) {
-	Serial.print("[Command Received] ");
-	Serial.println(cmd);
-
-	// 示例：简单控制板载LED
-	if (cmd == "LED_ON") {
-		digitalWrite(LED_BUILTIN, HIGH);
-		Serial.println("LED turned ON");
-	} else if (cmd == "LED_OFF") {
-		digitalWrite(LED_BUILTIN, LOW);
-		Serial.println("LED turned OFF");
-	} else if (cmd == "STATUS") {
-		Serial.println("System is running.");
-	} else {
-		Serial.println("Unknown command.");
-	}
-}
-
-
-void setup() {
-	Serial.begin(SERIAL_BAUD_RATE);
+void WiFiConnect(char *ssid, char *password) {
+	String _deviceName = DEVICE_NAME;
 	network.configure(
-		"fox",
-		"19645277",
-		"OpenVRGloves TrackerBT"
+		ssid,
+		password,
+		_deviceName
 	);  // 配置WiFi信息和设备名称
 
 	Serial.println("[" + network.getSSID() + "] Connecting...");
 	network.begin();  // 初始化网络连接
+	int retries = 0;
+	while (WiFi.status() != WL_CONNECTED && retries < 20) {
+		delay(500);
+		CheckSerialCommand();
+		Serial.print(".");
+		retries++;
+	}
 
+	if (WiFi.status() == WL_CONNECTED) {
+		Serial.println("\n[" + _deviceName + "] WiFi connected.");
+		Serial.print("[" + _deviceName + "] IP address: ");
+		Serial.println(WiFi.localIP());
+
+		network.scanForServer();
+	} else {
+		Serial.println("\n[" + _deviceName + "] Failed to connect to WiFi.");
+		while(WiFi.status() != WL_CONNECTED) {
+			digitalWrite(LED_BUILTIN, LOW);
+			CheckSerialCommand();
+			delay(500);
+			digitalWrite(LED_BUILTIN, HIGH);
+			CheckSerialCommand();
+			delay(500);
+		}
+	}
+}
+
+void handleSerialCommand(String cmd) {
+	if (cmd.startsWith("SET_WIFI ")) {
+		int sep = cmd.indexOf(' ', 9);
+		if (sep != -1) {
+			String newSsid = cmd.substring(9, sep);
+			String newPass = cmd.substring(sep + 1);
+			netWorkConfig.saveWiFiConfig(newSsid, newPass);
+			Serial.println("WiFi config saved.");
+
+			char ssidChar[33];    // 最多32字节 + null 终止符
+			char passChar[65];    // 最多64字节 + null 终止符
+			netWorkConfig.loadWiFiConfig(ssidChar, passChar);  // 从 EEPROM 中加载 WiFi 配置
+			WiFiConnect(&ssidChar[0], &passChar[0]);  // 连接到新 WiFi
+		}
+	}
+}
+
+void CheckSerialCommand() {
+	while (Serial.available()) {
+		char c = Serial.read();
+		if (c == '\n') {
+			serialCommand.trim();  // 去除前后空白
+			//Serial.print("Received command: ");
+			//Serial.println(serialCommand);
+			handleSerialCommand(serialCommand);
+			serialCommand = "";
+		} else {
+			serialCommand += c;
+		}
+	}
+}
+
+void setup() {
+	Serial.begin(SERIAL_BAUD_RATE);
 	pinMode(LED_BUILTIN, OUTPUT);
+	char ssidChar[33];    // 最多32字节 + null 终止符
+	char passChar[65];    // 最多64字节 + null 终止符
+	netWorkConfig.loadWiFiConfig(ssidChar, passChar);  // 从 EEPROM 中加载 WiFi 配置
+	WiFiConnect(&ssidChar[0], &passChar[0]);  // 连接到新 WiFi
+	
 	// #if COMMUNICATION == COMM_SERIAL
 	//	comm = new SerialCommunication();
 	// #elif COMMUNICATION == COMM_WIFISERIAL
@@ -66,17 +118,7 @@ void setup() {
 
 void loop() {
 	// 监听串口输入命令（非阻塞）
-	while (Serial.available()) {
-		char c = Serial.read();
-		if (c == '\n') {
-			serialCommand.trim();  // 去除前后空白
-			handleSerialCommand(serialCommand);
-			serialCommand = "";
-		} else {
-			serialCommand += c;
-		}
-	}
-
+	CheckSerialCommand();
 	if (comm->isOpen()) {
 #if USING_CALIB_PIN
 		bool calibButton = getButton(PIN_CALIB) != INVERT_CALIB;
@@ -139,4 +181,3 @@ void loop() {
 		delay(MAINTHREAD_DELAY);
 	}
 }
-

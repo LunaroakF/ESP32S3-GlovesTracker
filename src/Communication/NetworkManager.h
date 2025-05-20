@@ -15,7 +15,7 @@ public:
 		const char* password = "PASSWORD",
 		const String& deviceName = "HOSTNAME"
 	);
-	bool begin();
+	void begin();
 	bool isConnected();
 	void scanForServer();
 	String getDeviceName() const;

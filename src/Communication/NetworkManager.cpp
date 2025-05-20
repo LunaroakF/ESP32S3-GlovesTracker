@@ -12,31 +12,11 @@ void NetworkManager::configure(
 	_deviceName = deviceName;
 }
 
-bool NetworkManager::begin() {
+void NetworkManager::begin() {
 	WiFi.mode(WIFI_STA);
 	WiFi.hostname(_deviceName);
 	WiFi.begin(_ssid, _password);
 	Serial.print("[" + _deviceName + "] Connecting to WiFi");
-
-	int retries = 0;
-	while (WiFi.status() != WL_CONNECTED && retries < 20) {
-		delay(500);
-		Serial.print(".");
-		retries++;
-	}
-
-	if (WiFi.status() == WL_CONNECTED) {
-		Serial.println("\n[" + _deviceName + "] WiFi connected.");
-		Serial.print("[" + _deviceName + "] IP address: ");
-		Serial.println(WiFi.localIP());
-
-		scanForServer();
-
-		return true;
-	} else {
-		Serial.println("\n[" + _deviceName + "] Failed to connect to WiFi.");
-		return false;
-	}
 }
 
 void NetworkManager::scanForServer() {
