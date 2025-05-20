@@ -3,6 +3,9 @@
 
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
+#include <WiFiUdp.h>
+
+#include "../GlobalVars.h"
 
 class NetworkManager {
 public:
@@ -14,6 +17,7 @@ public:
 	);
 	bool begin();
 	bool isConnected();
+	void scanForServer();
 	String getDeviceName() const;
 	String getSSID() const;
 	String getPassword() const;

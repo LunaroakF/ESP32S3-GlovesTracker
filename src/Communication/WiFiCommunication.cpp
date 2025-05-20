@@ -2,14 +2,25 @@
 
 bool WifiCommunication::isOpen() { return m_isOpen; }
 
-void WifiCommunication::start() {
-	// Serial.begin(SERIAL_BAUD_RATE);
-	m_isOpen = true;
+void WifiCommunication::start(char* additional) {
+	_serverIP.fromString(additional);
+	if (!_udp.begin(2565)) {  // 本地监听端口
+		Serial.println("[WifiCommunication] UDP begin failed");
+		m_isOpen = false;
+		return;
+	} else {
+		m_isOpen = true;
+	}
 }
 
 void WifiCommunication::output(char* data) {
-	Serial.print(data);
-	Serial.flush();
+	if (!m_isOpen) {
+		return;
+	}
+	// Serial.println(String(data));  // Debug output to Serial
+	_udp.beginPacket(_serverIP, _serverPort);
+	_udp.write(data);
+	_udp.endPacket();
 }
 
 bool WifiCommunication::readData(char* input) {

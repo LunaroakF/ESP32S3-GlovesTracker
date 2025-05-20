@@ -2,7 +2,7 @@
 
 bool SerialCommunication::isOpen() { return m_isOpen; }
 
-void SerialCommunication::start() {
+void SerialCommunication::start(char* additional) {
 	Serial.begin(SERIAL_BAUD_RATE);
 	m_isOpen = true;
 }

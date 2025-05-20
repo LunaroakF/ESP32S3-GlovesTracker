@@ -6,7 +6,7 @@
 #define FLIP_POTS false  // 是否反转电位器
 
 #define MAINTHREAD_DELAY 4  // 主线程延迟时间ms
-#define MULTIPLEXER_DELAY 100  // 复用器稳定时间us
+#define MULTIPLEXER_DELAY 10  // 复用器稳定时间us
 
 #define CALIBRATION_LOOPS \
 	-1  // -1表示不进行校准，0表示只进行一次校准，正数表示进行多次校准

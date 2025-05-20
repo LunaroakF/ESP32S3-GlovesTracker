@@ -29,10 +29,64 @@ bool NetworkManager::begin() {
 		Serial.println("\n[" + _deviceName + "] WiFi connected.");
 		Serial.print("[" + _deviceName + "] IP address: ");
 		Serial.println(WiFi.localIP());
+
+		scanForServer();
+
 		return true;
 	} else {
 		Serial.println("\n[" + _deviceName + "] Failed to connect to WiFi.");
 		return false;
+	}
+}
+
+void NetworkManager::scanForServer() {
+	WiFiUDP udp;
+	udp.begin(2565);  // 监听端口
+
+	IPAddress localIP = WiFi.localIP();
+	IPAddress baseIP = localIP;
+	baseIP[3] = 0;
+
+	const char* message = "Hello";
+	unsigned long startTime = millis();
+	bool found = false;
+
+	Serial.println("[" + _deviceName + "] Scanning local network for server...");
+
+	for (int i = 1; i <= 255 && !found; i++) {
+		IPAddress targetIP(baseIP[0], baseIP[1], baseIP[2], i);
+		if (targetIP == localIP) {
+			continue;
+		}
+
+		udp.beginPacket(targetIP, 2566);
+		udp.write(message);
+		udp.endPacket();
+		delay(10);  // 避免过多拥塞
+
+		// 检查回应（短等待）
+		unsigned long t0 = millis();
+		while (millis() - t0 < 100 && !found) {
+			int packetSize = udp.parsePacket();
+			if (packetSize) {
+				char buffer[64];
+				int len = udp.read(buffer, sizeof(buffer) - 1);
+				buffer[len] = '\0';
+
+				_server = udp.remoteIP().toString();
+				found = true;
+
+				Serial.println("[" + _deviceName + "] Found server at: " + _server);
+			}
+		}
+	}
+
+	udp.stop();
+
+	if (!found) {
+		Serial.println(
+			"[" + _deviceName + "] No server response found in local network."
+		);
 	}
 }
 

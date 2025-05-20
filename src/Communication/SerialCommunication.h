@@ -10,7 +10,7 @@ public:
 
 	bool isOpen();
 
-	void start();
+	void start(char* additional);
 
 	void output(char* data);
 

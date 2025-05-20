@@ -5,11 +5,11 @@
 #include "gesture.h"
 #include "input.h"
 
-#if COMMUNICATION == COMM_SERIAL
-#include "Communication/SerialCommunication.h"
-#elif COMMUNICATION == COMM_WIFISERIAL
+// #if COMMUNICATION == COMM_SERIAL
+// #include "Communication/SerialCommunication.h"
+// #elif COMMUNICATION == COMM_WIFISERIAL
 #include "Communication/WiFiCommunication.h"
-#endif
+// #endif
 
 #if ENCODING == ENCODING_ALPHA
 #include "Encoder/Alpha.h"
@@ -23,8 +23,29 @@ GloversInput gloversInput;
 NetworkManager network;
 ICommunication* comm;
 int loops = 0;
+String serialCommand = "";
+
+void handleSerialCommand(String cmd) {
+	Serial.print("[Command Received] ");
+	Serial.println(cmd);
+
+	// 示例：简单控制板载LED
+	if (cmd == "LED_ON") {
+		digitalWrite(LED_BUILTIN, HIGH);
+		Serial.println("LED turned ON");
+	} else if (cmd == "LED_OFF") {
+		digitalWrite(LED_BUILTIN, LOW);
+		Serial.println("LED turned OFF");
+	} else if (cmd == "STATUS") {
+		Serial.println("System is running.");
+	} else {
+		Serial.println("Unknown command.");
+	}
+}
+
 
 void setup() {
+	Serial.begin(SERIAL_BAUD_RATE);
 	network.configure(
 		"fox",
 		"19645277",
@@ -35,16 +56,27 @@ void setup() {
 	network.begin();  // 初始化网络连接
 
 	pinMode(LED_BUILTIN, OUTPUT);
-#if COMMUNICATION == COMM_SERIAL
-	comm = new SerialCommunication();
-#elif COMMUNICATION == COMM_WIFISERIAL
+	// #if COMMUNICATION == COMM_SERIAL
+	//	comm = new SerialCommunication();
+	// #elif COMMUNICATION == COMM_WIFISERIAL
 	comm = new WifiCommunication();
-#endif
-	comm->start();
-	Serial.begin(115200);  // 初始波特率115200
+	// #endif
+	comm->start(const_cast<char*>(network.getServer().c_str()));  // 启动通信
 }
 
 void loop() {
+	// 监听串口输入命令（非阻塞）
+	while (Serial.available()) {
+		char c = Serial.read();
+		if (c == '\n') {
+			serialCommand.trim();  // 去除前后空白
+			handleSerialCommand(serialCommand);
+			serialCommand = "";
+		} else {
+			serialCommand += c;
+		}
+	}
+
 	if (comm->isOpen()) {
 #if USING_CALIB_PIN
 		bool calibButton = getButton(PIN_CALIB) != INVERT_CALIB;
@@ -107,3 +139,4 @@ void loop() {
 		delay(MAINTHREAD_DELAY);
 	}
 }
+
