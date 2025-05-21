@@ -16,7 +16,6 @@ void NetWorkConfig::loadWiFiConfig(char* ssid, char* password) {
 	EEPROM.end();
 }
 
-
 void NetWorkConfig::saveWiFiConfig(String ssid, String password) {
 	EEPROM.begin(EEPROM_SIZE);
 	for (int i = 0; i < 32; ++i) {

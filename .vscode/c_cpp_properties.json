@@ -10,6 +10,7 @@
             "includePath": [
                 "E:/work/VS/IDF/ESP8266 GlovesTracker/include",
                 "E:/work/VS/IDF/ESP8266 GlovesTracker/src",
+                "C:/Users/small/.platformio/packages/framework-arduinoespressif8266/libraries/EEPROM",
                 "E:/work/VS/IDF/ESP8266 GlovesTracker/lib/RunningMedian",
                 "C:/Users/small/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266WiFi/src",
                 "C:/Users/small/.platformio/packages/framework-arduinoespressif8266/libraries/SoftwareSerial/src",
@@ -21,7 +22,6 @@
                 "E:/work/VS/IDF/ESP8266 GlovesTracker/.pio/libdeps/d1_mini/Unity/src",
                 "C:/Users/small/.platformio/packages/framework-arduinoespressif8266/libraries/ArduinoOTA",
                 "C:/Users/small/.platformio/packages/framework-arduinoespressif8266/libraries/DNSServer/src",
-                "C:/Users/small/.platformio/packages/framework-arduinoespressif8266/libraries/EEPROM",
                 "C:/Users/small/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266AVRISP/src",
                 "C:/Users/small/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266HTTPClient/src",
                 "C:/Users/small/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266HTTPUpdateServer/src",
@@ -61,6 +61,7 @@
                 "path": [
                     "E:/work/VS/IDF/ESP8266 GlovesTracker/include",
                     "E:/work/VS/IDF/ESP8266 GlovesTracker/src",
+                    "C:/Users/small/.platformio/packages/framework-arduinoespressif8266/libraries/EEPROM",
                     "E:/work/VS/IDF/ESP8266 GlovesTracker/lib/RunningMedian",
                     "C:/Users/small/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266WiFi/src",
                     "C:/Users/small/.platformio/packages/framework-arduinoespressif8266/libraries/SoftwareSerial/src",
@@ -72,7 +73,6 @@
                     "E:/work/VS/IDF/ESP8266 GlovesTracker/.pio/libdeps/d1_mini/Unity/src",
                     "C:/Users/small/.platformio/packages/framework-arduinoespressif8266/libraries/ArduinoOTA",
                     "C:/Users/small/.platformio/packages/framework-arduinoespressif8266/libraries/DNSServer/src",
-                    "C:/Users/small/.platformio/packages/framework-arduinoespressif8266/libraries/EEPROM",
                     "C:/Users/small/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266AVRISP/src",
                     "C:/Users/small/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266HTTPClient/src",
                     "C:/Users/small/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266HTTPUpdateServer/src",

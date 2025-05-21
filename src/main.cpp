@@ -20,7 +20,7 @@ AlphaEncoder Encoder;  // 实例化编码器对象
 LegacyEncoder Encoder;  // 实例化编码器对象
 #endif
 
-void WiFiConnect(char *ssid, char *password);
+void WiFiConnect(char* ssid, char* password);
 void handleSerialCommand(String cmd);
 void CheckSerialCommand();
 
@@ -31,13 +31,10 @@ NetWorkConfig netWorkConfig;
 int loops = 0;
 String serialCommand = "";
 
-void WiFiConnect(char *ssid, char *password) {
+void WiFiConnect(char* ssid, char* password) {
 	String _deviceName = DEVICE_NAME;
-	network.configure(
-		ssid,
-		password,
-		_deviceName
-	);  // 配置WiFi信息和设备名称
+	network.configure(ssid, password,
+					  _deviceName);  // 配置WiFi信息和设备名称
 
 	Serial.println("[" + network.getSSID() + "] Connecting...");
 	network.begin();  // 初始化网络连接
@@ -57,7 +54,7 @@ void WiFiConnect(char *ssid, char *password) {
 		network.scanForServer();
 	} else {
 		Serial.println("\n[" + _deviceName + "] Failed to connect to WiFi.");
-		while(WiFi.status() != WL_CONNECTED) {
+		while (WiFi.status() != WL_CONNECTED) {
 			digitalWrite(LED_BUILTIN, LOW);
 			CheckSerialCommand();
 			delay(500);
@@ -70,6 +67,8 @@ void WiFiConnect(char *ssid, char *password) {
 
 void handleSerialCommand(String cmd) {
 	if (cmd.startsWith("SET_WIFI ")) {
+		digitalWrite(LED_BUILTIN, HIGH);
+		WiFi.disconnect();
 		int sep = cmd.indexOf(' ', 9);
 		if (sep != -1) {
 			String newSsid = cmd.substring(9, sep);
@@ -77,9 +76,12 @@ void handleSerialCommand(String cmd) {
 			netWorkConfig.saveWiFiConfig(newSsid, newPass);
 			Serial.println("WiFi config saved.");
 
-			char ssidChar[33];    // 最多32字节 + null 终止符
-			char passChar[65];    // 最多64字节 + null 终止符
-			netWorkConfig.loadWiFiConfig(ssidChar, passChar);  // 从 EEPROM 中加载 WiFi 配置
+			char ssidChar[33];  // 最多32字节 + null 终止符
+			char passChar[65];  // 最多64字节 + null 终止符
+			netWorkConfig.loadWiFiConfig(
+				ssidChar,
+				passChar
+			);  // 从 EEPROM 中加载 WiFi 配置
 			WiFiConnect(&ssidChar[0], &passChar[0]);  // 连接到新 WiFi
 		}
 	}
@@ -90,8 +92,8 @@ void CheckSerialCommand() {
 		char c = Serial.read();
 		if (c == '\n') {
 			serialCommand.trim();  // 去除前后空白
-			//Serial.print("Received command: ");
-			//Serial.println(serialCommand);
+			// Serial.print("Received command: ");
+			// Serial.println(serialCommand);
 			handleSerialCommand(serialCommand);
 			serialCommand = "";
 		} else {
@@ -103,11 +105,11 @@ void CheckSerialCommand() {
 void setup() {
 	Serial.begin(SERIAL_BAUD_RATE);
 	pinMode(LED_BUILTIN, OUTPUT);
-	char ssidChar[33];    // 最多32字节 + null 终止符
-	char passChar[65];    // 最多64字节 + null 终止符
+	char ssidChar[33];  // 最多32字节 + null 终止符
+	char passChar[65];  // 最多64字节 + null 终止符
 	netWorkConfig.loadWiFiConfig(ssidChar, passChar);  // 从 EEPROM 中加载 WiFi 配置
 	WiFiConnect(&ssidChar[0], &passChar[0]);  // 连接到新 WiFi
-	
+
 	// #if COMMUNICATION == COMM_SERIAL
 	//	comm = new SerialCommunication();
 	// #elif COMMUNICATION == COMM_WIFISERIAL
