@@ -21,13 +21,15 @@ void NetworkManager::begin() {
 
 void NetworkManager::scanForServer() {
 	WiFiUDP udp;
-	udp.begin(2565);  // 监听端口
+	udp.begin(2565);  // 本地监听端口
 
 	IPAddress localIP = WiFi.localIP();
 	IPAddress baseIP = localIP;
 	baseIP[3] = 0;
 
-	const char* message = "Hello";
+	const char* message = "GloveMessageHello";
+	const char* expectedResponse = "GloveMessageHelloBack";
+
 	unsigned long startTime = millis();
 	bool found = false;
 
@@ -39,24 +41,32 @@ void NetworkManager::scanForServer() {
 			continue;
 		}
 
-		udp.beginPacket(targetIP, 2566);
+		udp.beginPacket(targetIP, 2566);  // 向目标地址的端口2566发送消息
 		udp.write(message);
 		udp.endPacket();
 		delay(10);  // 避免过多拥塞
 
-		// 检查回应（短等待）
+		// 等待回应
 		unsigned long t0 = millis();
 		while (millis() - t0 < 100 && !found) {
 			int packetSize = udp.parsePacket();
 			if (packetSize) {
 				char buffer[64];
 				int len = udp.read(buffer, sizeof(buffer) - 1);
-				buffer[len] = '\0';
+				buffer[len] = '\0';  // 确保以 null 结尾
 
-				_server = udp.remoteIP().toString();
-				found = true;
+				// 检查回应内容
+				if (strcmp(buffer, expectedResponse) == 0) {
+					_server = udp.remoteIP().toString();
+					found = true;
 
-				Serial.println("[" + _deviceName + "] Found server at: " + _server);
+					Serial.println("[" + _deviceName + "] Found server at: " + _server);
+				} else {
+					Serial.println(
+						"Received unexpected response from " + udp.remoteIP().toString()
+						+ ": " + buffer
+					);
+				}
 			}
 		}
 	}
@@ -65,7 +75,7 @@ void NetworkManager::scanForServer() {
 
 	if (!found) {
 		Serial.println(
-			"[" + _deviceName + "] No server response found in local network."
+			"[" + _deviceName + "] No matching server response found in local network."
 		);
 	}
 }

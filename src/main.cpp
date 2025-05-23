@@ -69,20 +69,27 @@ void handleSerialCommand(String cmd) {
 	if (cmd.startsWith("SET_WIFI ")) {
 		digitalWrite(LED_BUILTIN, HIGH);
 		WiFi.disconnect();
-		int sep = cmd.indexOf(' ', 9);
-		if (sep != -1) {
-			String newSsid = cmd.substring(9, sep);
-			String newPass = cmd.substring(sep + 1);
+
+		// 提取双引号中的内容
+		int firstQuote = cmd.indexOf('"');
+		int secondQuote = cmd.indexOf('"', firstQuote + 1);
+		int thirdQuote = cmd.indexOf('"', secondQuote + 1);
+		int fourthQuote = cmd.indexOf('"', thirdQuote + 1);
+
+		if (firstQuote != -1 && secondQuote != -1 && thirdQuote != -1
+			&& fourthQuote != -1) {
+			String newSsid = cmd.substring(firstQuote + 1, secondQuote);
+			String newPass = cmd.substring(thirdQuote + 1, fourthQuote);
+
 			netWorkConfig.saveWiFiConfig(newSsid, newPass);
 			Serial.println("WiFi config saved.");
 
-			char ssidChar[33];  // 最多32字节 + null 终止符
-			char passChar[65];  // 最多64字节 + null 终止符
-			netWorkConfig.loadWiFiConfig(
-				ssidChar,
-				passChar
-			);  // 从 EEPROM 中加载 WiFi 配置
-			WiFiConnect(&ssidChar[0], &passChar[0]);  // 连接到新 WiFi
+			char ssidChar[33];
+			char passChar[65];
+			netWorkConfig.loadWiFiConfig(ssidChar, passChar);
+			WiFiConnect(ssidChar, passChar);
+		} else {
+			Serial.println("Invalid format. Use: SET_WIFI \"ssid\" \"password\"");
 		}
 	}
 }

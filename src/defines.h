@@ -15,7 +15,7 @@
 #define PHASE 0  // ADC相位偏移量
 
 // 手势
-#define TRIGGER_GESTURE true  // 触发手势
+#define TRIGGER_GESTURE true  // 扳机手势
 #define GRAB_GESTURE true  // 抓取手势
 #define PINCH_GESTURE true  // 捏合手势
 
@@ -31,7 +31,7 @@
 // 中值滤波
 #define ENABLE_MEDIAN_FILTER true
 #ifdef ENABLE_MEDIAN_FILTER
-#define MEDIAN_SAMPLES 40  // 中值滤波采样次数
+#define MEDIAN_SAMPLES 20  // 中值滤波采样次数
 #endif
 
 // 是否对模拟输入值限幅
