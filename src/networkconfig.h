@@ -1,6 +1,5 @@
 #include <EEPROM.h>
-#include <ESP8266WiFi.h>
-#include <SoftwareSerial.h>
+#include <WiFi.h>
 
 #define EEPROM_SIZE 96
 

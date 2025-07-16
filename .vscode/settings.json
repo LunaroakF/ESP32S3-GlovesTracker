@@ -1,5 +1,5 @@
 {
-    "idf.portWin": "COM6",
+    "idf.portWin": "COM20",
     "files.associations": {
         "optional": "cpp",
         "ostream": "cpp",

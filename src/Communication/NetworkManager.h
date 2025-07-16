@@ -2,7 +2,7 @@
 #define NETWORK_MANAGER_H
 
 #include <Arduino.h>
-#include <ESP8266WiFi.h>
+#include <WiFi.h>
 #include <WiFiUdp.h>
 
 #include "../GlobalVars.h"

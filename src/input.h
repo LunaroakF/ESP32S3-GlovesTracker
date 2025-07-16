@@ -1,5 +1,5 @@
 #include <RunningMedian.h>  //中值滤波 https://github.com/RobTillaart/RunningMedian
-#include <SoftwareSerial.h>
+#include <HardwareSerial.h>
 
 #include "defines.h"
 

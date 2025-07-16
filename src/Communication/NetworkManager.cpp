@@ -42,7 +42,7 @@ void NetworkManager::scanForServer() {
 		}
 
 		udp.beginPacket(targetIP, 2566);  // 向目标地址的端口2566发送消息
-		udp.write(message);
+		udp.write((uint8_t*)message, strlen(message));
 		udp.endPacket();
 		delay(10);  // 避免过多拥塞
 

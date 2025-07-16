@@ -20,7 +20,7 @@
 #define PINCH_GESTURE true  // 捏合手势
 
 // 开发板定义
-#define BOARD ESP8266
+#define BOARD AtomS3R
 #define SERIAL_BAUD_RATE 115200  // 串口波特率
 #define COMMUNICATION COMM_WIFISERIAL  // 通信方式 COMM_SERIAL | COMM_WIFISERIAL
 #define DEVICE_NAME "OpenVRGloves TrackerBT"  // 设备名称
@@ -48,5 +48,13 @@
 #define PIN_SB 14
 #define PIN_SC 12
 #define PIN_ADC A0
+#define ANALOG_MAX 1023  // ADC最大值
+#endif
+
+#if BOARD == AtomS3R
+#define PIN_SA 5
+#define PIN_SB 6
+#define PIN_SC 7
+#define PIN_ADC 8
 #define ANALOG_MAX 1023  // ADC最大值
 #endif

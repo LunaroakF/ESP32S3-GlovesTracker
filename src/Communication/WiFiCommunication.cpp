@@ -19,7 +19,7 @@ void WifiCommunication::output(char* data) {
 	}
 	// Serial.println(String(data));  // Debug output to Serial
 	_udp.beginPacket(_serverIP, _serverPort);
-	_udp.write(data);
+	_udp.write((uint8_t*)data, strlen(data));
 	_udp.endPacket();
 }
 

@@ -1,10 +1,14 @@
-#include <SoftwareSerial.h>
-
 #include "Communication/NetworkManager.h"
 #include "defines.h"
 #include "gesture.h"
 #include "input.h"
 #include "networkconfig.h"
+
+#include <M5Unified.h>
+#include <LittleFS.h>
+#include <esp_heap_caps.h>
+
+
 
 // #if COMMUNICATION == COMM_SERIAL
 // #include "Communication/SerialCommunication.h"
@@ -98,9 +102,10 @@ void CheckSerialCommand() {
 	while (Serial.available()) {
 		char c = Serial.read();
 		if (c == '\n') {
+			M5.Lcd.println("Get...");
 			serialCommand.trim();  // 去除前后空白
-			// Serial.print("Received command: ");
-			// Serial.println(serialCommand);
+			Serial.print("Received command: ");
+			Serial.println(serialCommand);
 			handleSerialCommand(serialCommand);
 			serialCommand = "";
 		} else {
@@ -111,10 +116,28 @@ void CheckSerialCommand() {
 
 void setup() {
 	Serial.begin(SERIAL_BAUD_RATE);
-	pinMode(LED_BUILTIN, OUTPUT);
+	M5.begin();
+	M5.Lcd.setTextColor(WHITE);
+  	M5.Lcd.setCursor(10, 10);
+  	M5.Lcd.println("Loading...");
+	Serial.println("Hello from AtomS3R!");
+	
+	//pinMode(LED_BUILTIN, OUTPUT);
 	char ssidChar[33];  // 最多32字节 + null 终止符
 	char passChar[65];  // 最多64字节 + null 终止符
+	//netWorkConfig.saveWiFiConfig("fox", "19645277");  // 清空配置
+	
 	netWorkConfig.loadWiFiConfig(ssidChar, passChar);  // 从 EEPROM 中加载 WiFi 配置
+
+	//strncpy(ssidChar, "fox", 32);     // 最多拷贝32个字符
+	//strncpy(passChar, "19645277", 64);
+
+	M5.Lcd.print("SSID: ");
+	M5.Lcd.println(ssidChar);
+
+	M5.Lcd.print("PASS: ");
+	M5.Lcd.println(passChar);
+
 	WiFiConnect(&ssidChar[0], &passChar[0]);  // 连接到新 WiFi
 
 	// #if COMMUNICATION == COMM_SERIAL
