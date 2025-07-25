@@ -27,7 +27,9 @@ void NetworkManager::scanForServer() {
 	IPAddress baseIP = localIP;
 	baseIP[3] = 0;
 
-	const char* message = "GloveMessageHello";
+	String messageStr = "GloveMessageHello" + String(ANALOG_MAX);  // 拼接字符串和数字
+	const char* message = messageStr.c_str();  // 转为 const char* 指针
+
 	const char* expectedResponse = "GloveMessageHelloBack";
 
 	unsigned long startTime = millis();
@@ -41,9 +43,10 @@ void NetworkManager::scanForServer() {
 			continue;
 		}
 
-		udp.beginPacket(targetIP, 2566);  // 向目标地址的端口2566发送消息
+		udp.beginPacket(targetIP, 2566);
 		udp.write((uint8_t*)message, strlen(message));
 		udp.endPacket();
+
 		delay(10);  // 避免过多拥塞
 
 		// 等待回应

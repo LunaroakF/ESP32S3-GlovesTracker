@@ -32,8 +32,8 @@
 #define HAND LEFT
 
 // 摇杆设置
-#define JOYSTICK_BLANK false //是否禁用摇杆
-#define JOYSTICK_DEADZONE 10 //摇杆死区
+#define JOYSTICK_BLANK true  // 是否禁用摇杆
+#define JOYSTICK_DEADZONE 10  // 摇杆死区
 
 // 手势
 #define TRIGGER_GESTURE true  // 扳机手势
@@ -69,6 +69,8 @@
 #define PIN_SB 14
 #define PIN_SC 12
 #define PIN_ADC A0
+#define PIN_JOYSTICK_X NULL
+#define PIN_JOYSTICK_Y NULL
 #define ANALOG_MAX 1023  // ADC最大值
 #endif
 

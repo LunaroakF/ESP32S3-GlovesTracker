@@ -6,6 +6,7 @@
 #include <WiFiUdp.h>
 
 #include "../GlobalVars.h"
+#include "../defines.h"
 
 class NetworkManager {
 public:

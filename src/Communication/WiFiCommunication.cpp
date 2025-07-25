@@ -17,9 +17,19 @@ void WifiCommunication::output(char* data) {
 	if (!m_isOpen) {
 		return;
 	}
+	// 根据 HAND 宏定义添加 L 或 R 前缀
+	char handPrefix = (HAND == LEFT) ? 'L' : 'R';
+
+	// 构造完整字符串
+	const size_t originalLen = strlen(data);
+	const size_t totalLen = originalLen + 2;
+	char buffer[totalLen];
+	buffer[0] = handPrefix;
+	strcpy(buffer + 1, data);
+
 	// Serial.println(String(data));  // Debug output to Serial
 	_udp.beginPacket(_serverIP, _serverPort);
-	_udp.write((uint8_t*)data, strlen(data));
+	_udp.write((uint8_t*)buffer, strlen(buffer));
 	_udp.endPacket();
 }
 

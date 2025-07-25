@@ -33,31 +33,37 @@ void ScreenManager::wake() {
 
 void ScreenManager::drawBackground() {
 	int screenWidth = M5.Lcd.width();
-    int screenHeight = M5.Lcd.height();
+	int screenHeight = M5.Lcd.height();
 	int topHeight = 15;
 	M5.Lcd.fillRect(0, 0, screenWidth, topHeight, YELLOW);
 	M5.Lcd.fillRect(0, topHeight, screenWidth, M5.Lcd.height() - topHeight, SKYBLUE);
-    M5.Lcd.fillRect(0, screenHeight - topHeight, screenWidth, topHeight, GREEN);
+	M5.Lcd.fillRect(0, screenHeight - topHeight, screenWidth, topHeight, GREEN);
 }
 
 void ScreenManager::drawIP(const String& ipAddress, const String& ServeripAddress) {
 	int screenWidth = M5.Lcd.width();
-    int screenHeight = M5.Lcd.height();
+	int screenHeight = M5.Lcd.height();
 	int topHeight = 15;
 	M5.Lcd.setTextColor(BLACK, YELLOW);
 	M5.Lcd.setTextSize(1);
-    String Text = "C: " + ipAddress;
+	String Text = "C: " + ipAddress;
 	int textWidth = M5.Lcd.textWidth(Text);
 	int x = (screenWidth - textWidth) / 2;
 	M5.Lcd.fillRect(0, 0, screenWidth, topHeight, YELLOW);  // 擦除旧IP
 	M5.Lcd.setCursor(x, 4);
 	M5.Lcd.print(Text);
-    M5.Lcd.setTextColor(BLACK, GREEN);
-    M5.Lcd.setTextSize(1);
-    Text = "S: " + ServeripAddress;
-    textWidth = M5.Lcd.textWidth(Text);
+	M5.Lcd.setTextColor(BLACK, GREEN);
+	M5.Lcd.setTextSize(1);
+	Text = "S: " + ServeripAddress;
+	textWidth = M5.Lcd.textWidth(Text);
 	x = (screenWidth - textWidth) / 2;
-    M5.Lcd.fillRect(0, screenHeight - topHeight, screenWidth, topHeight, GREEN);  // 擦除旧IP
+	M5.Lcd.fillRect(
+		0,
+		screenHeight - topHeight,
+		screenWidth,
+		topHeight,
+		GREEN
+	);  // 擦除旧IP
 	M5.Lcd.setCursor(x, screenHeight - topHeight + 4);
 	M5.Lcd.print(Text);
 }

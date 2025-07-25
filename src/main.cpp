@@ -136,7 +136,10 @@ void setup() {
 		M5.Lcd.println("Looking For Server...");
 		WiFiConnect(&ssidChar[0], &passChar[0]);  // 连接到新 WiFi
 		screenManager.drawBackground();  // 绘制 UI
-		screenManager.drawIP(WiFi.localIP().toString(), network.getServer());  // 显示 IP 地址
+		screenManager.drawIP(
+			WiFi.localIP().toString(),
+			network.getServer()
+		);  // 显示 IP 地址
 	}
 
 #if COMMUNICATION == COMM_SERIAL
@@ -202,13 +205,11 @@ void loop() {
 		bool pinchButton = false;
 #endif
 		bool menuButton = false;
-		
 
 		int JoyX = gloversInput.getJoyX();
 		int JoyY = gloversInput.getJoyY();
 
 		screenManager.drawJoySticks(JoyX, JoyY);
-
 
 		comm->output(Encoder.encode(
 			fingerPos,
