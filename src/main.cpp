@@ -1,20 +1,19 @@
+#include <LittleFS.h>
+#include <M5Unified.h>
+#include <esp_heap_caps.h>
+
 #include "Communication/NetworkManager.h"
+#include "M5/ScreenManage.h"
 #include "defines.h"
 #include "gesture.h"
 #include "input.h"
 #include "networkconfig.h"
 
-#include <M5Unified.h>
-#include <LittleFS.h>
-#include <esp_heap_caps.h>
-
-
-
-// #if COMMUNICATION == COMM_SERIAL
-// #include "Communication/SerialCommunication.h"
-// #elif COMMUNICATION == COMM_WIFISERIAL
+#if COMMUNICATION == COMM_SERIAL
+#include "Communication/SerialCommunication.h"
+#elif COMMUNICATION == COMM_WIFISERIAL
 #include "Communication/WiFiCommunication.h"
-// #endif
+#endif
 
 #if ENCODING == ENCODING_ALPHA
 #include "Encoder/Alpha.h"
@@ -32,14 +31,13 @@ GloversInput gloversInput;
 NetworkManager network;
 ICommunication* comm;
 NetWorkConfig netWorkConfig;
+ScreenManager screenManager;
 int loops = 0;
 String serialCommand = "";
 
 void WiFiConnect(char* ssid, char* password) {
 	String _deviceName = DEVICE_NAME;
-	network.configure(ssid, password,
-					  _deviceName);  // 配置WiFi信息和设备名称
-
+	network.configure(ssid, password, _deviceName);  // 配置WiFi信息和设备名称
 	Serial.println("[" + network.getSSID() + "] Connecting...");
 	network.begin();  // 初始化网络连接
 	int retries = 0;
@@ -116,40 +114,43 @@ void CheckSerialCommand() {
 
 void setup() {
 	Serial.begin(SERIAL_BAUD_RATE);
-	M5.begin();
-	M5.Lcd.setTextColor(WHITE);
-  	M5.Lcd.setCursor(10, 10);
-  	M5.Lcd.println("Loading...");
-	Serial.println("Hello from AtomS3R!");
-	
-	//pinMode(LED_BUILTIN, OUTPUT);
+	// 从 EEPROM 中加载 WiFi 配置
 	char ssidChar[33];  // 最多32字节 + null 终止符
 	char passChar[65];  // 最多64字节 + null 终止符
-	//netWorkConfig.saveWiFiConfig("fox", "19645277");  // 清空配置
-	
-	netWorkConfig.loadWiFiConfig(ssidChar, passChar);  // 从 EEPROM 中加载 WiFi 配置
+	netWorkConfig.loadWiFiConfig(ssidChar, passChar);
 
-	//strncpy(ssidChar, "fox", 32);     // 最多拷贝32个字符
-	//strncpy(passChar, "19645277", 64);
+	if (BOARD == ESP8266) {
+		pinMode(LED_BUILTIN, OUTPUT);
+		WiFiConnect(&ssidChar[0], &passChar[0]);  // 连接到新 WiFi
+	} else if (BOARD == AtomS3R) {
+		M5.begin();
+		screenManager.begin();  // 初始化息屏管理器
+		M5.Lcd.setBrightness(100);
+		M5.Lcd.setTextColor(WHITE);
+		M5.Lcd.setCursor(0, 10);
+		M5.Lcd.println("Connecting...");
+		M5.Lcd.print("SSID: ");
+		M5.Lcd.println(ssidChar);
+		M5.Lcd.print("PASS: ");
+		M5.Lcd.println(passChar);
+		M5.Lcd.println("Looking For Server...");
+		WiFiConnect(&ssidChar[0], &passChar[0]);  // 连接到新 WiFi
+		screenManager.drawBackground();  // 绘制 UI
+		screenManager.drawIP(WiFi.localIP().toString(), network.getServer());  // 显示 IP 地址
+	}
 
-	M5.Lcd.print("SSID: ");
-	M5.Lcd.println(ssidChar);
-
-	M5.Lcd.print("PASS: ");
-	M5.Lcd.println(passChar);
-
-	WiFiConnect(&ssidChar[0], &passChar[0]);  // 连接到新 WiFi
-
-	// #if COMMUNICATION == COMM_SERIAL
-	//	comm = new SerialCommunication();
-	// #elif COMMUNICATION == COMM_WIFISERIAL
+#if COMMUNICATION == COMM_SERIAL
+	comm = new SerialCommunication();
+#elif COMMUNICATION == COMM_WIFISERIAL
 	comm = new WifiCommunication();
-	// #endif
+#endif
+
 	comm->start(const_cast<char*>(network.getServer().c_str()));  // 启动通信
 }
 
 void loop() {
 	// 监听串口输入命令（非阻塞）
+	screenManager.update();  // 每帧检查息屏状态
 	CheckSerialCommand();
 	if (comm->isOpen()) {
 #if USING_CALIB_PIN
@@ -168,6 +169,13 @@ void loop() {
 		}
 
 		int* fingerPos = gloversInput.getFingerPosition(calibrate, calibButton);
+		screenManager.drawFingers(
+			fingerPos[0],  // THUMB
+			fingerPos[1],  // INDEX
+			fingerPos[2],  // MIDDLE
+			fingerPos[3],  // RING
+			fingerPos[4]  // PINKY
+		);
 		bool joyButton = false;
 
 #if TRIGGER_GESTURE
@@ -178,6 +186,9 @@ void loop() {
 
 		bool aButton = false;
 		bool bButton = false;
+		if (BOARD == AtomS3R) {
+			bButton = M5.BtnA.wasPressed();
+		}
 
 #if GRAB_GESTURE
 		bool grabButton = grabGesture(fingerPos);
@@ -189,13 +200,15 @@ void loop() {
 		bool pinchButton = pinchGesture(fingerPos);
 #else
 		bool pinchButton = false;
-
 #endif
-
 		bool menuButton = false;
+		
 
-		int JoyX = 0;
-		int JoyY = 0;
+		int JoyX = gloversInput.getJoyX();
+		int JoyY = gloversInput.getJoyY();
+
+		screenManager.drawJoySticks(JoyX, JoyY);
+
 
 		comm->output(Encoder.encode(
 			fingerPos,

@@ -1,6 +1,20 @@
 // ADC口串联的电阻大小，对于ESP8266电位器链接3.3V要保证传入ADC分压在1V以内
 // ||仅标记无引用||
 #define OHM 23.5
+/* ---------------宏编号--------------- */
+// 手指编号
+#define LEFT 0
+#define RIGHT 1
+// 通信方式
+#define COMM_SERIAL 0
+#define COMM_WIFISERIAL 1
+// 编码方式
+#define ENCODING_LEGACY 0
+#define ENCODING_ALPHA 1
+// 开发板
+#define ESP8266 0
+#define AtomS3R 1
+/* ------------------------------------ */
 
 #define NO_THUMB false  // 是否禁用大拇指追踪
 #define FLIP_POTS false  // 是否反转电位器
@@ -13,6 +27,13 @@
 #define ALWAYS_CALIBRATING CALIBRATION_LOOPS == -1
 
 #define PHASE 0  // ADC相位偏移量
+
+// 手部定义 LEFT | RIGHT
+#define HAND LEFT
+
+// 摇杆设置
+#define JOYSTICK_BLANK false //是否禁用摇杆
+#define JOYSTICK_DEADZONE 10 //摇杆死区
 
 // 手势
 #define TRIGGER_GESTURE true  // 扳机手势
@@ -56,5 +77,7 @@
 #define PIN_SB 6
 #define PIN_SC 7
 #define PIN_ADC 8
-#define ANALOG_MAX 1023  // ADC最大值
+#define PIN_JOYSTICK_X 39
+#define PIN_JOYSTICK_Y 38
+#define ANALOG_MAX 4095  // ADC最大值
 #endif

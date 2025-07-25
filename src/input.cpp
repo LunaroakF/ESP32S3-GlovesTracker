@@ -88,3 +88,31 @@ void GloversInput::setChannel(int channel) {
 	digitalWrite(PIN_SB, bitRead(channel, 1));
 	digitalWrite(PIN_SC, bitRead(channel, 2));
 }
+
+int GloversInput::analogReadDeadzone(byte pin){
+  int raw = analogRead(pin);
+  if (abs(ANALOG_MAX/2 - raw) < JOYSTICK_DEADZONE * ANALOG_MAX / 100)
+    return ANALOG_MAX/2;
+  else
+    return raw;
+}
+
+int GloversInput::getJoyX(){
+  #if JOYSTICK_BLANK
+  return ANALOG_MAX/2;
+  #elif JOY_FLIP_X
+  return ANALOG_MAX - analogReadDeadzone(PIN_JOY_X);
+  #else
+  return analogReadDeadzone(PIN_JOYSTICK_X);
+  #endif
+}
+
+int GloversInput::getJoyY(){
+  #if JOYSTICK_BLANK
+  return ANALOG_MAX/2;
+  #elif JOY_FLIP_Y
+  return ANALOG_MAX - analogReadDeadzone(PIN_JOY_Y);
+  #else
+  return analogReadDeadzone(PIN_JOYSTICK_Y);
+  #endif
+}

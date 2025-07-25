@@ -1,5 +1,5 @@
-#include <RunningMedian.h>  //中值滤波 https://github.com/RobTillaart/RunningMedian
 #include <HardwareSerial.h>
+#include <RunningMedian.h>  //中值滤波 https://github.com/RobTillaart/RunningMedian
 
 #include "defines.h"
 
@@ -11,6 +11,9 @@ public:
 		pinMode(PIN_SC, OUTPUT);
 	}
 	int* getFingerPosition(bool calibrating, bool reset);
+	int analogReadDeadzone(byte pin);
+	int getJoyX();
+	int getJoyY();
 
 private:
 	void setChannel(int channel);
